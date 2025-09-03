@@ -1,0 +1,210 @@
+Relatório de Atividades – Projeto AgroLink
+Data: 01 de Setembro de 2025 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Conclusão da Fase 1 - Estruturação e Implantação da Infraestrutura do Banco de Dados.
+
+1. Objetivo Principal do Dia
+O objetivo central das nossas atividades hoje foi construir, do zero, toda a infraestrutura de banco de dados para o sistema AgroLink. A meta era criar uma fundação robusta, escalável e profissional, pronta para suportar o futuro desenvolvimento da aplicação.
+
+2. Resumo das Atividades Executadas (O que fizemos)
+    1 - Decisão de Arquitetura de Hospedagem:
+
+        Analisamos a oferta de banco de dados do plano de hospedagem compartilhada (Hostinger Premium) e concluímos que não era adequada por ser baseada em MySQL e não oferecer suporte à extensão PostGIS, que é crucial para as funcionalidades de geolocalização do projeto.
+
+        Ação Indicada e Executada: Optamos pela contratação de um Servidor Virtual Privado (VPS) na Hostinger, que nos daria controle total sobre o ambiente.
+
+    2 - Configuração do Servidor (VPS):
+
+        Ação Executada: Foi provisionado um novo servidor VPS e, seguindo a recomendação, foi instalado o sistema operacional Ubuntu 22.04 LTS.
+
+    3 - Instalação e Configuração do Banco de Dados:
+
+        Ação Executada: Acessamos o servidor via SSH (usando o cliente PuTTY) e executamos os seguintes passos via linha de comando:
+
+        Atualização completa do sistema operacional (apt update && apt upgrade).
+
+        Instalação do PostgreSQL e da extensão PostGIS (apt install...).
+
+    4 - Modelagem e Criação da Estrutura Lógica do Banco:
+
+        Discutimos duas abordagens de organização de tabelas: Prefixos e Schemas.
+
+        Ação Indicada e Executada: Optamos pela abordagem de Schemas (lands, operations, finances) devido à necessidade futura de gerenciar regras de permissões de acesso, uma decisão de arquitetura mais robusta.
+
+        Executamos os scripts SQL para:
+
+        Criar os schemas lands, operations e finances.
+
+        Criar as tabelas (lands.talhoes, operations.safras, operations.tipos_tarefa, operations.atividades_agricolas, finances.lancamentos_financeiros), definindo colunas, tipos de dados (incluindo o tipo GEOMETRY do PostGIS), chaves primárias e chaves estrangeiras (REFERENCES) para garantir a integridade e o relacionamento entre os dados.
+
+    5 - Configuração do Acesso Remoto:
+
+        Ação Indicada e Executada: Editamos os arquivos de configuração do PostgreSQL (postgresql.conf e pg_hba.conf) no servidor para permitir conexões externas, possibilitando o acesso por ferramentas de desenvolvimento como o DBeaver. O serviço do PostgreSQL foi reiniciado para aplicar as alterações.
+
+    6 - Conexão e Inserção de Dados:
+
+        Ação Executada: Configuramos a conexão no cliente de banco de dados DBeaver.
+
+        Ação Executada: Inserimos dados de amostra para validar toda a estrutura. Cadastramos:
+
+        1 Talhão (com dados de geometria).
+
+        5 Tipos de Tarefa.
+
+        1 Safra (vinculada ao talhão).
+
+        1 Atividade Agrícola (vinculada à safra e a um tipo de tarefa).
+
+    7 - Resolução de Problemas (Debugging):
+
+        Durante o processo, enfrentamos e solucionamos alguns problemas comuns:
+
+        Erro de digitação (Typo): Corrigimos um erro de digitação no tipo de dado TIMESTAMPTZ.
+
+        Erro de sintaxe: Corrigimos a falta de uma vírgula em um comando INSERT.
+
+        Erro de Execução no DBeaver: Identificamos que o erro persistia devido ao uso da função "Executar Declaração" em vez de "Executar Script" (F5). Adoção do método correto resolveu o problema.
+
+3. Estado Atual do Projeto (Onde paramos)
+Ao final das atividades de hoje, o estado do projeto é o seguinte:
+
+    A infraestrutura do banco de dados está 100% configurada, funcional e populada com dados iniciais.
+
+    O servidor VPS está no ar e acessível.
+
+    O banco de dados agrolink contém uma estrutura de schemas e tabelas relacionalmente íntegra, pronta para ser consumida por uma aplicação.
+
+    A base de dados está pronta para a próxima fase de desenvolvimento.
+
+4. Próximos Passos Indicados
+    A Fase 1 (Banco de Dados) está concluída. A próxima grande etapa é a Fase 2: Desenvolvimento do Back-end (API).
+
+    Plano Indicado:
+
+    1 - Instalar o ambiente de desenvolvimento na sua máquina local: Node.js e a linha de comando do NestJS (CLI).
+
+    2 - Criar um novo projeto NestJS, que será a nossa agrolink-api.
+
+    3 - Configurar a conexão do projeto NestJS com o banco de dados PostgreSQL que acabamos de criar no VPS.
+
+    4 - Iniciar o desenvolvimento do primeiro módulo da API (ex: lands), criando rotas (endpoints) para ler e escrever dados na tabela lands.talhoes.
+
+Data: 02 de Setembro de 2025 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Início da Fase 2 - Construção do Back-end com NestJS e Criação do Primeiro Módulo CRUD.
+
+1. Objetivo Principal do Dia
+O objetivo de hoje foi iniciar a Fase 2 do projeto: o desenvolvimento do back-end. A meta era criar a estrutura inicial da API (agrolink-api) usando NestJS, estabelecer a conexão com o banco de dados PostgreSQL que preparamos no VPS e construir o primeiro módulo completo de gerenciamento de dados (CRUD para "Terras"), que servirá de modelo para todos os outros.
+
+2. Resumo das Atividades Executadas (O que fizemos)
+Criação do Projeto Back-end:
+
+
+Ação Indicada e Executada: Seguindo o plano , criamos um novo projeto NestJS chamado 
+
+agrolink-api  utilizando a CLI (Command Line Interface) do NestJS.
+
+Configuração da Conexão com o Banco de Dados:
+
+Ação Executada: Instalamos as dependências necessárias para a comunicação com o PostgreSQL (@nestjs/typeorm, typeorm, pg) e para o gerenciamento de configurações (@nestjs/config).
+
+
+Ação Indicada e Executada: Configuramos a conexão segura com o banco de dados. Criamos um arquivo 
+
+.env para armazenar as credenciais (host, usuário, senha) e desenvolvemos um módulo de banco de dados (DatabaseModule) centralizado para gerenciar a conexão.
+
+Desenvolvimento do Módulo lands (CRUD Completo):
+
+Ação Executada: Criamos a estrutura completa para o gerenciamento de "Talhões", que inclui:
+
+
+Entidade: Um arquivo talhao.entity.ts que espelha a tabela lands.talhoes do banco de dados para o código.
+
+
+DTOs (Data Transfer Objects): Arquivos create-talhao.dto.ts e update-talhao.dto.ts para definir o formato dos dados e habilitar validações automáticas nas rotas de criação e atualização.
+
+
+Serviço (lands.service.ts): Implementamos toda a lógica de negócio para interagir com o banco de dados.
+
+
+Controlador (lands.controller.ts): Criamos todos os endpoints da API para as quatro operações CRUD:
+
+GET /lands e GET /lands/:id (Leitura)
+
+POST /lands (Criação)
+
+PATCH /lands/:id (Atualização)
+
+DELETE /lands/:id (Deleção)
+
+Testes e Validação da API:
+
+Ação Indicada e Executada: Instalamos e utilizamos a extensão Thunder Client no VS Code para testar os endpoints que não podiam ser acessados via navegador (POST, PATCH, DELETE), confirmando que todas as operações CRUD estavam funcionando perfeitamente.
+
+Resolução de Problemas (Debugging):
+
+Durante o desenvolvimento, enfrentamos e solucionamos diversos erros de compilação e execução, que serviram como aprendizado:
+
+Erro de Conexão (ECONNREFUSED): O erro inicial de conexão foi diagnosticado como um problema local. A aplicação estava tentando se conectar a localhost em vez do IP do VPS. Corrigimos garantindo que o arquivo .env estava no local correto e com o nome exato.
+
+Erro de Tipo (string | undefined): O TypeScript nos alertou que as variáveis de ambiente poderiam ser indefinidas. Corrigimos isso afirmando que os valores sempre existiriam, usando o operador 
+
+! no database.module.ts.
+
+Erro de Módulo (Cannot find module 'geojson'): Ocorreu porque faltava a instalação das definições de tipo para o GeoJSON. Solucionamos com npm install --save-dev @types/geojson.
+
+Erro de Importação (import type): O TypeScript exigiu que a importação de Geometry fosse marcada como "apenas tipo" (import type) devido às configurações do NestJS.
+
+Erro de Metadados (EntityMetadataNotFoundError): O TypeORM não estava reconhecendo nossa TalhaoEntity. Corrigimos configurando o DatabaseModule para carregar as entidades automaticamente com autoLoadEntities: true.
+
+Erro de Rota (404 Not Found): Identificamos e corrigimos um erro de digitação na URL (//lands) e, posteriormente, a remoção acidental do método findAll() no controlador.
+
+3. Estrutura Atual do Projeto
+O projeto agrolink-api agora possui uma estrutura modular e escalável. A organização de arquivos atual é a seguinte:
+
+
+src/core/database: Contém nosso módulo de conexão centralizado. 
+
+
+src/modules/lands: Contém o nosso primeiro módulo de negócio completo. 
+
+
+dto/: Define os formatos de dados de entrada. 
+
+
+entities/: Define o espelho das tabelas do banco. 
+
+
+lands.controller.ts: Define as rotas da API. 
+
+
+lands.service.ts: Contém a lógica de negócio. 
+
+
+lands.module.ts: Une todas as partes do módulo. 
+
+4. Estado Atual do Projeto (Onde paramos)
+A Fase 2 (Desenvolvimento do Back-end) foi iniciada com sucesso.
+
+A aplicação agrolink-api está conectada ao banco de dados e rodando localmente.
+
+O primeiro módulo (lands) está 100% funcional, com todas as operações CRUD (Criar, Ler, Atualizar, Deletar) implementadas e testadas.
+
+Este módulo agora serve como um "template" perfeito para a criação de todos os outros módulos do sistema.
+
+5. Próximos Passos Indicados
+O próximo passo lógico é continuar a construção da API, replicando o padrão de sucesso do módulo lands para as outras entidades do sistema.
+
+Plano Indicado:
+
+Iniciar o desenvolvimento do módulo de Safras (crop-cycles), que é a próxima entidade central do sistema.
+
+O processo será:
+
+Criar a SafraEntity, incluindo o relacionamento com a TalhaoEntity.
+
+Criar os DTOs (CreateSafraDto, UpdateSafraDto).
+
+Gerar a estrutura do módulo com a CLI do NestJS.
+
+Implementar os 5 endpoints CRUD no CropCyclesController e CropCyclesService.
