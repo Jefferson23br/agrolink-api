@@ -1,19 +1,15 @@
 import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 
-export class CreateTalhaoDto {
+export class CreatePropriedadeDto {
   @IsString()
   @IsNotEmpty()
   nome: string;
 
   @IsNumber()
-  @IsOptional() 
-  areaHectares?: number;
+  @IsOptional()
+  areaTotalHectares?: number;
 
   @IsObject()
-  @IsNotEmpty()
-  geometria: any;
-
-  @IsNumber()
-  @IsNotEmpty()
-  propriedadeId: number;
+  @IsOptional()
+  geometria?: any;
 }

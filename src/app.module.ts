@@ -4,13 +4,16 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './core/database/database.module';
 import { LandsModule } from './modules/lands/lands.module';
+import { CropCyclesModule } from './modules/crop-cycles/crop-cycles.module';
+
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    LandsModule, 
+    LandsModule,
+    CropCyclesModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

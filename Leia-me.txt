@@ -208,3 +208,104 @@ Criar os DTOs (CreateSafraDto, UpdateSafraDto).
 Gerar a estrutura do módulo com a CLI do NestJS.
 
 Implementar os 5 endpoints CRUD no CropCyclesController e CropCyclesService.
+
+Data: 03 de Setembro de 2025 ----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Reestruturação do Módulo lands e Criação do Módulo crop-cycles (Safras).
+
+1. Objetivo Principal do Dia
+O objetivo de hoje foi refinar a arquitetura do back-end para alinhá-la com a lógica de negócio correta (Propriedade -> Talhão) e, em seguida, replicar o padrão de desenvolvimento CRUD para construir o novo módulo de gerenciamento de Safras (crop-cycles).
+
+2. Resumo das Atividades Executadas (O que fizemos)
+Revisão e Ajuste da Lógica de Negócio:
+
+Discussão: Identificamos que a estrutura inicial do módulo lands não refletia a hierarquia correta do negócio, que é ter Propriedades (Fazendas) que contêm vários Talhões.
+
+Decisão: Optamos por reestruturar tanto o banco de dados quanto o código da API para implementar a relação Propriedade -> Talhão.
+
+Reestruturação do Banco de Dados:
+
+Ação Executada: Rodamos um script SQL no DBeaver para:
+
+Excluir as tabelas afetadas pela mudança (atividades_agricolas, safras, talhoes).
+
+Criar uma nova tabela lands.propriedades para armazenar as fazendas.
+
+Recriar a tabela lands.talhoes com uma coluna de chave estrangeira (propriedade_id) que a conecta à nova tabela de propriedades.
+
+Recriar as tabelas operations.safras e operations.atividades_agricolas para restabelecer as dependências.
+
+Reestruturação do Código do Back-end (Módulo lands):
+
+Exclusão: Apagamos os arquivos lands.controller.ts e lands.service.ts para evitar conflitos.
+
+Criação de Novas Entidades:
+
+Criamos o arquivo propriedade.entity.ts para espelhar a nova tabela do banco.
+
+Alteração de Arquivos Existentes:
+
+Editamos o talhao.entity.ts para incluir a relação @ManyToOne com a PropriedadeEntity.
+
+Editamos o create-talhao.dto.ts para tornar o propriedadeId um campo obrigatório.
+
+Criação de Novos Módulos Lógicos:
+
+Dividimos a responsabilidade criando um par de serviço/controlador para cada entidade:
+
+propriedades.service.ts e propriedades.controller.ts
+
+talhoes.service.ts e talhoes.controller.ts
+
+Editamos o lands.module.ts para reconhecer e gerenciar todos esses novos componentes.
+
+Criação do Módulo crop-cycles (CRUD Completo para Safras):
+
+Ação Executada: Seguindo o padrão estabelecido pelo módulo lands, construímos o módulo completo para gerenciar Safras.
+
+Criação: Criamos a SafraEntity, o CreateSafraDto e o UpdateSafraDto.
+
+Geração de Arquivos: Usamos a CLI do NestJS (nest g module/controller/service) para criar os arquivos base.
+
+Implementação: Preenchemos o crop-cycles.service.ts e o crop-cycles.controller.ts com a lógica CRUD completa (GET, POST, PATCH, DELETE).
+
+Registro: Adicionamos o CropCyclesModule ao app.module.ts para ativá-lo na aplicação.
+
+Dificuldades e Soluções:
+
+Erro de Importação (Cannot find name 'IsOptional'): Identificamos que o decorator IsOptional não havia sido importado no arquivo create-talhao.dto.ts. A correção foi adicionar o nome ao import da biblioteca class-validator.
+
+Lógica de Relacionamento de Dados: Tivemos uma discussão importante sobre como a Safra se conecta à Propriedade. Concluímos que a conexão indireta (Safra -> Talhão -> Propriedade) é a melhor prática para evitar redundância de dados e garantir a integridade do banco. Ajustamos os métodos find no crop-cycles.service.ts para usar relations: ['talhao', 'talhao.propriedade'] e trazer os dados completos na resposta da API.
+
+3. Estrutura Atual do Projeto
+O projeto agrolink-api está agora significativamente mais robusto e bem estruturado.
+
+src/modules/lands/: Módulo completo que agora gerencia duas entidades relacionadas:
+
+propriedades.controller.ts / propriedades.service.ts
+
+talhoes.controller.ts / talhoes.service.ts
+
+src/modules/crop-cycles/: Novo módulo completo que gerencia as Safras.
+
+crop-cycles.controller.ts / crop-cycles.service.ts
+
+4. Estado Atual do Projeto (Onde paramos)
+A reestruturação para a lógica Propriedade -> Talhão foi concluída e testada com sucesso. A API agora permite criar fazendas e, em seguida, criar talhões dentro delas.
+
+O módulo de Safras (crop-cycles) está 100% funcional, com todas as operações CRUD implementadas e a capacidade de se relacionar com os talhões.
+
+A base de código está estável e pronta para a criação dos próximos módulos.
+
+5. Próximos Passos Indicados
+Com os módulos de lands e crop-cycles completos, a base operacional do sistema está tomando forma. O próximo passo lógico é continuar construindo os módulos que se conectam a esta base.
+
+Plano Indicado:
+
+Iniciar o desenvolvimento do módulo de Atividades Agrícolas, que se conectará diretamente às Safras. Isso envolverá:
+
+Criar a AtividadeAgricolaEntity e seus DTOs.
+
+Criar o módulo, serviço e controlador para atividades-agricolas.
+
+Implementar o CRUD, permitindo que o usuário agende, atualize e conclua tarefas para uma safra específica.

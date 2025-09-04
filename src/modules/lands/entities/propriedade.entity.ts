@@ -2,44 +2,39 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PropriedadeEntity } from './propriedade.entity';
+import { TalhaoEntity } from './talhao.entity';
 
-@Entity({ name: 'talhoes', schema: 'lands' })
-export class TalhaoEntity {
+@Entity({ name: 'propriedades', schema: 'lands' })
+export class PropriedadeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'propriedade_id', type: 'int', nullable: false })
-  propriedadeId: number;
-  
   @Column({ type: 'varchar', length: 255, nullable: false })
   nome: string;
 
   @Column({
-    name: 'area_hectares',
+    name: 'area_total_hectares',
     type: 'decimal',
     precision: 10,
     scale: 2,
     nullable: true,
   })
-  areaHectares: number;
+  areaTotalHectares: number;
 
   @Column({
     type: 'geometry',
     spatialFeatureType: 'Polygon',
     srid: 4326,
-    nullable: false,
+    nullable: true,
   })
   geometria;
 
-  @ManyToOne(() => PropriedadeEntity, (propriedade) => propriedade.talhoes)
-  @JoinColumn({ name: 'propriedade_id', referencedColumnName: 'id' })
-  propriedade: PropriedadeEntity;
+  @OneToMany(() => TalhaoEntity, (talhao) => talhao.propriedade)
+  talhoes: TalhaoEntity[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
