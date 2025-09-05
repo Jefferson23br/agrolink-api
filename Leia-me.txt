@@ -309,3 +309,84 @@ Criar a AtividadeAgricolaEntity e seus DTOs.
 Criar o módulo, serviço e controlador para atividades-agricolas.
 
 Implementar o CRUD, permitindo que o usuário agende, atualize e conclua tarefas para uma safra específica.
+
+Data: 04 de Setembro de 2025 -------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Finalização da Arquitetura Operacional com a Criação dos Módulos task-types e activities.
+
+1. Objetivo Principal do Dia
+O objetivo de hoje foi construir a camada final da arquitetura operacional básica do back-end. A meta era criar os módulos para gerenciar os Tipos de Tarefa (catálogo de operações) e as Atividades Agrícolas (a execução dessas operações), conectando-os com os módulos de Safras e Terras já existentes.
+
+2. Resumo das Atividades Executadas (O que fizemos)
+Criação do Módulo task-types (CRUD Completo para Tipos de Tarefa):
+
+Ação Executada: Identificamos a necessidade de ter um módulo para gerenciar o catálogo de tarefas antes de criar as atividades em si.
+
+Criação de Arquivos: Criamos a TaskTypeEntity e os DTOs (create-task-type.dto.ts e update-task-type.dto.ts).
+
+Geração de Estrutura: Usamos a CLI do NestJS para gerar os arquivos base do módulo, controlador e serviço.
+
+Implementação: Preenchemos os arquivos gerados com a lógica CRUD completa para gerenciar os Tipos de Tarefa, disponibilizando a funcionalidade na rota /tipos-tarefa.
+
+Criação do Módulo activities (CRUD Completo para Atividades Agrícolas):
+
+Ação Executada: Com o módulo de Tipos de Tarefa como pré-requisito, construímos o módulo central de Atividades.
+
+Criação de Arquivos: Criamos a ActivityEntity e seus DTOs, estabelecendo os relacionamentos (@ManyToOne) com SafraEntity and TaskTypeEntity.
+
+Geração de Estrutura: Usamos a CLI do NestJS para criar a estrutura de arquivos do módulo.
+
+Implementação: Preenchemos os arquivos activities.service.ts e activities.controller.ts com a lógica CRUD completa, tornando a funcionalidade disponível na rota /atividades.
+
+Registro dos Módulos na Aplicação:
+
+Ação Executada: Atualizamos o arquivo principal app.module.ts para importar e registrar os novos TaskTypesModule e ActivitiesModule, integrando-os oficialmente à aplicação.
+
+Dificuldades, Diagnóstico e Soluções (Debugging):
+
+Erro de Duplicidade (duplicate key value violates unique constraint): Ao testar a criação de um "Tipo de Tarefa", encontramos este erro.
+
+Diagnóstico: Identificamos que o erro não era um bug, mas sim o banco de dados funcionando corretamente, impedindo a inserção de um registro com um nome que já existia.
+
+Solução: Adotamos a prática correta de teste: limpar os dados da tabela (DELETE FROM ...) antes de executar novamente a requisição de criação.
+
+Erro de Chave Estrangeira (violates foreign key constraint): Ao tentar apagar um Tipo de Tarefa que já estava em uso por uma Atividade, o banco bloqueou a operação.
+
+Diagnóstico: Entendemos que o banco de dados estava protegendo a integridade dos dados, impedindo que uma atividade ficasse "órfã".
+
+Solução: Estabelecemos o procedimento correto de limpeza para testes: apagar primeiro os registros "filhos" (atividades_agricolas) para depois apagar os registros "pais" (tipos_tarefa).
+
+Erro de Coluna Inexistente (column "updated_at" ... does not exist): Ao criar uma atividade, a API retornou um erro 500.
+
+Diagnóstico: O log do NestJS revelou que havia um descompasso entre a nossa entidade no código (que esperava uma coluna updated_at) e a estrutura da tabela no banco (que não tinha essa coluna).
+
+Solução: Executamos um comando ALTER TABLE ... ADD COLUMN ... no DBeaver para adicionar a coluna que faltava, sincronizando o banco com o código.
+
+3. Estrutura Atual do Projeto
+A API do AgroLink agora possui uma base operacional robusta com quatro módulos principais interconectados, seguindo um padrão consistente de desenvolvimento:
+
+src/modules/lands/: Gerencia Propriedades e Talhões.
+
+src/modules/crop-cycles/: Gerencia as Safras.
+
+src/modules/task-types/: Gerencia o catálogo de Tipos de Tarefa.
+
+src/modules/activities/: Gerencia a execução de Atividades Agrícolas.
+
+4. Estado Atual do Projeto (Onde paramos)
+Toda a arquitetura operacional básica do back-end está construída e funcional.
+
+A API permite criar uma hierarquia completa de dados: uma Propriedade com seus Talhões, uma Safra nesse talhão, e uma Atividade de um Tipo específico agendada para essa safra.
+
+Os relacionamentos entre as entidades foram testados e estão funcionando como esperado. A base de código está estável.
+
+5. Próximos Passos Indicados
+Com a espinha dorsal operacional montada, agora podemos começar a adicionar os módulos de suporte que enriquecerão o sistema.
+
+Plano Indicado:
+
+Iniciar o desenvolvimento do Módulo de Pessoas/Colaboradores.
+
+O objetivo será criar uma estrutura para cadastrar usuários (operadores, agrônomos, gerentes) com diferentes funções.
+
+No futuro, poderemos conectar esse módulo às Atividades, para registrar qual colaborador foi o responsável pela execução de cada tarefa. O processo de criação será o mesmo que já dominamos (Entidade, DTOs, CLI, preenchimento do CRUD).

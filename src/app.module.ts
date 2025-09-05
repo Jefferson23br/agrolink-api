@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './core/database/database.module';
 import { LandsModule } from './modules/lands/lands.module';
 import { CropCyclesModule } from './modules/crop-cycles/crop-cycles.module';
+import { TaskTypesModule } from './modules/task-types/task-types.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 
 
@@ -13,7 +15,9 @@ import { CropCyclesModule } from './modules/crop-cycles/crop-cycles.module';
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
     LandsModule,
-    CropCyclesModule, 
+    CropCyclesModule,
+    TaskTypesModule,
+    ActivitiesModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
