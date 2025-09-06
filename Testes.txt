@@ -1,1 +1,13 @@
+Rodar
+
 npm run start:dev
+
+Quantidade de arquivos 
+
+(git log --author="Jefferson23br" --name-only --pretty=format: | Sort-Object | Get-Unique).Count
+
+Este mostra quantas vezes modifiquei o arquivo 
+git log --author="Jefferson23br" --name-only --pretty=format: |  
+    Where-Object {$_ -ne ""} | 
+    Group-Object | 
+    Sort-Object Count -Descending
