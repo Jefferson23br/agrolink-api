@@ -16,15 +16,17 @@ export class CropCyclesService {
     const safra = this.repository.create(dto);
     return this.repository.save(safra);
   }
-  
+
   findAll() {
-    return this.repository.find({ relations: ['talhao', 'talhao.propriedade'] });
+    return this.repository.find({
+      relations: ['talhao', 'talhao.propriedade', 'cultura'],
+    });
   }
 
   async findOne(id: number) {
     const safra = await this.repository.findOne({
       where: { id },
-      relations: ['talhao'],
+      relations: ['talhao', 'talhao.propriedade', 'cultura'],
     });
     if (!safra) {
       throw new NotFoundException(`Safra com o ID #${id} não encontrada.`);

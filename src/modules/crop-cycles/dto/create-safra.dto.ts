@@ -9,6 +9,10 @@ export class CreateSafraDto {
   @IsNotEmpty()
   talhaoId: number;
 
+  @IsNumber()
+  @IsNotEmpty()
+  culturaId: number;
+
   @IsDateString()
   @IsOptional()
   dataInicioPlanejado?: Date;

@@ -7,6 +7,8 @@ import { LandsModule } from './modules/lands/lands.module';
 import { CropCyclesModule } from './modules/crop-cycles/crop-cycles.module';
 import { TaskTypesModule } from './modules/task-types/task-types.module';
 import { ActivitiesModule } from './modules/activities/activities.module';
+import { CropsModule } from './modules/crops/crops.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
 
 
 
@@ -17,7 +19,9 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     LandsModule,
     CropCyclesModule,
     TaskTypesModule,
-    ActivitiesModule, 
+    ActivitiesModule,
+    CropsModule,
+    InventoryModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

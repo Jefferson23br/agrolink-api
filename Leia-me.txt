@@ -390,3 +390,103 @@ Iniciar o desenvolvimento do Módulo de Pessoas/Colaboradores.
 O objetivo será criar uma estrutura para cadastrar usuários (operadores, agrônomos, gerentes) com diferentes funções.
 
 No futuro, poderemos conectar esse módulo às Atividades, para registrar qual colaborador foi o responsável pela execução de cada tarefa. O processo de criação será o mesmo que já dominamos (Entidade, DTOs, CLI, preenchimento do CRUD).
+
+Data: 06 de Setembro de 2025 -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Implementação do Módulo de Culturas e Construção da Arquitetura de Estoque.
+
+1. Objetivo Principal do Dia
+O objetivo de hoje foi duplo: primeiro, integrar o conceito de "Culturas" ao sistema, conectando-o diretamente às Safras para enriquecer os dados operacionais. Segundo, projetar e construir a fundação da arquitetura de controle de Estoque, implementando o primeiro componente essencial: o catálogo de Produtos.
+
+2. Resumo das Atividades Executadas (O que fizemos)
+Decisão Estratégica de Priorização:
+
+Discussão: Antes de prosseguir para o módulo de Usuários, identificamos a necessidade de primeiro conectar as Culturas (ex: Soja, Milho) às Safras, uma etapa fundamental para a lógica de negócio.
+
+Ação: Decidimos pausar o desenvolvimento de novos módulos para primeiro enriquecer os já existentes.
+
+Implementação do Módulo crops (CRUD Completo para Culturas):
+
+Ajuste no Banco de Dados: Executamos um script SQL para criar a tabela operations.culturas e para adicionar a coluna de chave estrangeira cultura_id na tabela operations.safras, estabelecendo a ligação.
+
+Construção do Módulo na API: Seguindo nosso padrão, construímos o módulo crops do zero, incluindo:
+
+CulturaEntity e os DTOs (create-cultura.dto.ts, update-cultura.dto.ts).
+
+Geração da estrutura via CLI do NestJS.
+
+Implementação da lógica CRUD completa no CropsService e CropsController, expondo a funcionalidade na rota /culturas.
+
+Atualização e Integração do Módulo crop-cycles (Safras):
+
+Ação Executada: Modificamos o módulo de Safras para que ele "entendesse" a nova conexão com Culturas.
+
+Atualizamos a SafraEntity para incluir o relacionamento @ManyToOne com a CulturaEntity.
+
+Atualizamos o CreateSafraDto para tornar o culturaId um campo obrigatório.
+
+Melhoramos os métodos find no CropCyclesService para carregar os dados da cultura junto com os da safra (relations: [..., 'cultura']).
+
+Construção da Arquitetura de Estoque (inventory):
+
+Modelagem do Banco de Dados: Projetamos uma arquitetura robusta para o controle de inventário com um novo schema inventory, contendo três tabelas essenciais:
+
+inventory.produtos: O catálogo de todos os itens estocáveis (grãos e insumos).
+
+inventory.estoque_niveis: Para armazenar o saldo atual de cada produto.
+
+inventory.estoque_movimentacoes: Um "livro-razão" para registrar cada entrada e saída de forma auditável.
+
+Implementação do Catálogo de Produtos na API:
+
+Criamos a ProductEntity e seus DTOs.
+
+Geramos a estrutura do módulo inventory e os componentes para products via CLI.
+
+Implementamos o CRUD completo para gerenciar o catálogo de produtos na rota /produtos.
+
+Registramos o InventoryModule no app.module.ts.
+
+Testes e Validação:
+
+Ação Executada: Testamos com sucesso a criação e listagem de Culturas (POST e GET em /culturas).
+
+Ação Executada: Testamos a criação de uma Safra, que agora exige um culturaId, validando a integração entre os módulos. O resultado GET /safras/:id confirmou que os dados da cultura relacionada foram carregados corretamente.
+
+Ação Executada: Testamos com sucesso a criação e listagem de Produtos no novo módulo de inventário.
+
+3. Dificuldades, Diagnóstico e Soluções
+Erro de Sintaxe no SQL (syntax error at or near "created_at"): Ao executar o script inicial do banco de dados para o estoque, encontramos um erro.
+
+Diagnóstico: Identificamos uma vírgula faltando no comando CREATE TABLE para estoque_movimentacoes.
+
+Solução: Corrigimos o script e o executamos em blocos separados para garantir que cada tabela fosse criada na ordem correta, resolvendo o problema.
+
+4. Estrutura Atual do Projeto
+A API do AgroLink agora conta com um novo módulo para gerenciamento de Culturas e a base para o módulo de Inventário:
+
+src/modules/crops/: Novo módulo completo para gerenciar o catálogo de Culturas.
+
+src/modules/inventory/: Novo módulo para Estoque, contendo por enquanto o CRUD para o catálogo de produtos.
+
+5. Estado Atual do Projeto (Onde paramos)
+A API agora possui um sistema de relacionamento completo entre Propriedades, Talhões, Culturas e Safras.
+
+A estrutura do banco de dados para um controle de estoque completo e auditável está implementada.
+
+A API possui um endpoint (/produtos) 100% funcional para gerenciar o catálogo de produtos (grãos, insumos, etc.).
+
+A base de código está estável e pronta para o próximo passo: a implementação da lógica de movimentação de estoque.
+
+6. Próximos Passos Indicados
+Com o catálogo de produtos pronto, o próximo passo crucial é dar vida ao sistema de estoque, criando a lógica para registrar as entradas e saídas.
+
+Plano Indicado:
+
+Dentro do nosso módulo inventory, criar um novo par de controlador e serviço para as Movimentações (movements.controller.ts e movements.service.ts).
+
+Criar os DTOs necessários para registrar uma nova movimentação (ex: create-movement.dto.ts).
+
+Implementar a lógica no serviço de movimentações que, ao receber um registro de entrada (ex: +50.000 kg de Soja vindo de uma colheita), automaticamente atualiza o saldo correspondente na tabela estoque_niveis.
+
+Isso nos permitirá registrar eventos como "Colheita" e "Venda" e ver o impacto deles em tempo real no nosso estoque.
