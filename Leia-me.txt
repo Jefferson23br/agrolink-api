@@ -490,3 +490,107 @@ Criar os DTOs necessários para registrar uma nova movimentação (ex: create-mo
 Implementar a lógica no serviço de movimentações que, ao receber um registro de entrada (ex: +50.000 kg de Soja vindo de uma colheita), automaticamente atualiza o saldo correspondente na tabela estoque_niveis.
 
 Isso nos permitirá registrar eventos como "Colheita" e "Venda" e ver o impacto deles em tempo real no nosso estoque.
+
+Data: 06 de Setembro de 2025 -------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Assunto: Refatoração do Módulo de Estoque e Implementação da Gestão de Silos.
+
+1. Objetivo Principal do Dia
+O objetivo central de hoje foi expandir drasticamente a funcionalidade do sistema de inventário, introduzindo o conceito de 
+
+Silos como locais de armazenamento distintos.  A meta era refatorar a arquitetura de banco de dados e o código do back-end para suportar um controle de estoque multi-localidade e, por fim, criar uma consulta que consolidasse o estado atual do estoque para qualquer silo.
+
+2. Resumo das Atividades Executadas (O que fizemos)
+Refatoração Completa da Arquitetura do Banco de Dados inventory:
+
+
+Ação Executada: Para garantir consistência total, executamos um script para apagar completamente (DROP SCHEMA ... CASCADE) e recriar todo o schema inventory. 
+
+Ação Executada: Criamos a nova tabela inventory.silos para o cadastro dos locais de armazenamento.
+
+
+Ação Executada: Reestruturamos as tabelas inventory.estoque_niveis e inventory.estoque_movimentacoes, adicionando a coluna de chave estrangeira silo_id em ambas para criar o relacionamento com a nova tabela de silos. 
+
+Construção do Módulo silos (CRUD Completo):
+
+
+Ação Executada: Criamos uma nova estrutura de pastas (src/modules/inventory/silos/) para gerenciar a lógica dos silos de forma organizada. 
+
+
+Ação Executada: Geramos os arquivos base do módulo (module, controller, service) utilizando a CLI do NestJS. 
+
+
+Ação Executada: Implementamos a SiloEntity para espelhar a tabela do banco, e os DTOs (CreateSiloDto, UpdateSiloDto) para validação de dados. 
+
+
+Ação Executada: Preenchemos o SilosService e o SilosController com a lógica CRUD completa, tornando os endpoints POST, GET, PATCH e DELETE para /silos 100% funcionais. 
+
+Refatoração do Código de Movimentações de Estoque:
+
+
+Ação Executada: Atualizamos as entidades MovementEntity e StockLevelEntity no código para incluir o relacionamento @ManyToOne com a SiloEntity. 
+
+
+Ação Executada: Modificamos o CreateMovementDto para que a criação de uma nova movimentação exija um siloId. 
+
+
+Ação Executada: Reescrevemos completamente a lógica do movements.service.ts. O serviço agora valida a existência do produto e do silo, e a busca/atualização do saldo de estoque é feita pela combinação 
+
+produto_id + silo_id. 
+
+Implementação da Consulta de Estoque Consolidado:
+
+
+Ação Executada: Criamos um novo endpoint: GET /silos/:id/estoque. 
+
+
+Ação Executada: Implementamos um novo método (findStock) no SilosService que busca os dados de um silo e, utilizando relations do TypeORM, faz o JOIN com as tabelas de níveis de estoque e produtos para retornar um relatório completo e formatado do que há dentro daquele silo. 
+
+Dificuldades, Diagnóstico e Soluções (Debugging):
+
+Erro de Banco de Dados (relation "..." does not exist): Diagnosticado como uma tentativa de criar tabelas "filhas" (com chaves estrangeiras) antes de suas tabelas "pai". A solução foi a criação de um script único que executa todos os comandos 
+
+CREATE TABLE na ordem correta de dependência. 
+
+Erro de Banco de Dados (violates not-null constraint para silo_id): Ocorreu porque o servidor NestJS estava rodando uma versão em cache do arquivo movement.entity.ts que não continha a nova propriedade silo. A solução foi parar o servidor manualmente (
+
+Ctrl+C) e reiniciá-lo, forçando a leitura de todos os arquivos atualizados. 
+
+Erro de Código (Enum used before its declaration): Um erro de compilação do TypeScript causado pela ordem incorreta do código no arquivo movement.entity.ts. A solução foi mover a declaração do 
+
+enum para antes da classe que o utilizava. 
+
+Erro de Código (UnknownDependenciesException): Ocorreu duas vezes. Foi diagnosticado como a falta de registro das entidades (SiloEntity, StockLevelEntity) no SilosModule. A solução foi adicionar as entidades ao array do 
+
+TypeOrmModule.forFeature([...]) dentro do silos.module.ts. 
+
+3. Estrutura Atual do Projeto
+A estrutura do projeto foi expandida com sucesso. O módulo 
+
+inventory agora contém um submódulo dedicado e completo para silos, conforme o arquivo estrutura.txt reflete.  A API está robusta e bem organizada.
+
+4. Estado Atual do Projeto (Onde paramos)
+A refatoração para um sistema de estoque baseado em Silos foi concluída e está 100% funcional.
+
+A API permite:
+
+Gerenciar o CRUD de Produtos.
+
+Gerenciar o CRUD de Silos.
+
+Registrar movimentações de um produto específico para um silo específico.
+
+Consultar um relatório detalhado do estoque atual de qualquer silo.
+
+A base de dados e o back-end estão sincronizados e estáveis.
+
+5. Próximos Passos Indicados
+Sua visão de um sistema totalmente interligado está muito próxima. O elo que falta é conectar a "Operação" (a colheita) com o "Estoque" (a entrada no silo).
+
+Plano Indicado:
+
+Conectar Atividades e Movimentações: Vamos alterar a MovementEntity e o CreateMovementDto para que uma movimentação possa, opcionalmente, receber um atividadeId.
+
+Ajustar o Serviço: Atualizaremos o movements.service.ts para salvar essa nova ligação.
+
+Resultado: Com isso, ao registrar uma ENTRADA do tipo "Colheita", poderemos saber exatamente de qual Atividade (e, por consequência, de qual Safra e Talhão) aquele grão veio, concretizando sua visão de rastreabilidade total.
