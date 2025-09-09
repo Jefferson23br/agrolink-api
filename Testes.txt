@@ -17,3 +17,7 @@ controi estrutura
 
 Get-ChildItem -Path . -Recurse -Include *.tsx,*.ts,*.js,*.json -Exclude node_modules,.expo,.git | 
 Where-Object { $_.FullName -notmatch "\\node_modules\\|\\\.expo\\|\\\.git\\" } | Select-Object FullName | Out-File estrutura.txt
+
+MensageM
+
+antes de começar, eu estou cançado, ja avançamos muito no nosso plano de ação, eu vou pedir novamente para me enviar um relatorio completo de tudo que fizemos hoje, em detalhaes, tudo que corrigimos, tudo que criamos, editamos, e avançamos na ideia, os erros, e como corrigimos, alem disso vou te enviar a estrutura atual para que veja, e tire dela conclusoes, alem disso envia um fluxo tambem detalhado, do que ja finalizamos e os proximos passos e o que implementamos 

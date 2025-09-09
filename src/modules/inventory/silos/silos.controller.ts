@@ -1,6 +1,13 @@
 import {
-  Controller, Get, Post, Body, Patch,
-  Param, Delete, ParseIntPipe, HttpCode,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { SilosService } from './silos.service';
 import { CreateSiloDto } from './dto/create-silo.dto';
@@ -42,5 +49,10 @@ export class SilosController {
   @Get(':id/estoque')
   findSiloStock(@Param('id', ParseIntPipe) id: number) {
     return this.silosService.findStock(id);
+  }
+
+  @Get(':id/movimentacoes')
+  findSiloMovements(@Param('id', ParseIntPipe) id: number) {
+    return this.silosService.findMovements(id);
   }
 }

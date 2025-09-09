@@ -1,6 +1,10 @@
 import {
-  IsEnum, IsNotEmpty, IsNumber,
-  IsOptional, IsPositive, IsString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
 } from 'class-validator';
 import { MovementType } from '../entities/movement.entity';
 import { Type } from 'class-transformer';
@@ -13,6 +17,10 @@ export class CreateMovementDto {
   @IsNumber()
   @IsNotEmpty()
   siloId: number;
+
+  @IsNumber()
+  @IsOptional()
+  atividadeId?: number;
 
   @IsEnum(MovementType)
   @IsNotEmpty()
