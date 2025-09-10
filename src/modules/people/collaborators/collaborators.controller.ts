@@ -5,6 +5,7 @@ import {
 import { CollaboratorsService } from './collaborators.service';
 import { CreateColaboradorDto } from './dto/create-colaborador.dto';
 import { UpdateColaboradorDto } from './dto/update-colaborador.dto';
+import { CreateHistoricoDto } from './dto/create-historico.dto';
 
 @Controller('collaborators')
 export class CollaboratorsController {
@@ -37,5 +38,18 @@ export class CollaboratorsController {
   @HttpCode(204)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.collaboratorsService.remove(id);
+  }
+
+  @Post(':id/historico')
+  addHistorico(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateHistoricoDto,
+  ) {
+    return this.collaboratorsService.addHistorico(id, dto);
+  }
+
+  @Get(':id/historico')
+  findHistorico(@Param('id', ParseIntPipe) id: number) {
+    return this.collaboratorsService.findHistorico(id);
   }
 }
