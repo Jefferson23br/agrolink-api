@@ -1,98 +1,88 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# AgroLink API 🌾
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bem-vindo ao repositório do Projeto Full-Stack do AgroLink! [cite_start]Este projeto é a minha visão para um sistema ERP (Enterprise Resource Planning) completo e moderno para o agronegócio brasileiro, construído para ser robusto, escalável e totalmente integrado[cite: 275].
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este README narra a jornada de construção desta API, as tecnologias que escolhi, as decisões de arquitetura que tomei e o roadmap para o futuro.
 
-## Description
+## A Jornada de Construção
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tudo o que você vê aqui foi construído passo a passo, com um foco imenso na criação de uma fundação sólida para o futuro.
 
-## Project setup
+#### 1. A Fundação: Infraestrutura e Banco de Dados
+[cite_start]Tudo começou com uma decisão crucial: em vez de usar uma hospedagem compartilhada limitada, optei por um **Servidor Virtual Privado (VPS)**, o que me deu controle total sobre o ambiente[cite: 50]. [cite_start]Instalei o **Ubuntu 22.04**, configurei o **PostgreSQL** e, o mais importante, a extensão **PostGIS**, que é a espinha dorsal para todas as funcionalidades de geolocalização do sistema[cite: 51, 53].
 
-```bash
-$ npm install
-```
+Desde o início, a organização foi uma prioridade. [cite_start]Decidi estruturar o banco de dados usando **Schemas (`lands`, `operations`, `inventory`, `people`)** em vez de prefixos, uma escolha de arquitetura que facilita enormemente a gestão de permissões e a clareza do modelo de dados[cite: 54].
 
-## Compile and run the project
+#### 2. O Coração da API: NestJS e o Primeiro CRUD
+[cite_start]Com o banco de dados pronto, iniciei a construção da API com **NestJS**, um framework que escolhi por sua arquitetura modular e escalável[cite: 78]. O primeiro grande desafio foi criar o módulo `lands`, que se tornou o "template" para todos os outros. [cite_start]Foi uma jornada de aprendizado intensa, superando desafios de conexão com o banco no VPS [cite: 86][cite_start], entendendo as particularidades do TypeScript com o TypeORM [cite: 91] [cite_start]e configurando o `autoLoadEntities` para que o sistema reconhecesse minhas entidades[cite: 94].
 
-```bash
-# development
-$ npm run start
+#### 3. Evolução e Refatoração: Adaptando à Lógica de Negócio
+Um dos momentos mais importantes foi quando percebi que a lógica inicial de "Talhões" estava incompleta. O sistema precisava refletir a hierarquia do mundo real: **Propriedade -> Talhão**. [cite_start]Isso exigiu uma refatoração corajosa tanto no banco de dados quanto no código, mas o resultado foi uma API muito mais robusta e correta[cite: 111]. Essa experiência definiu uma filosofia para o projeto: estar sempre pronto para adaptar e melhorar a arquitetura conforme a necessidade do negócio.
 
-# watch mode
-$ npm run start:dev
+#### 4. Rumo a um Sistema Integrado e com Rastreabilidade Total
+A partir dessa base sólida, construí os módulos operacionais em sequência:
+* [cite_start]**Safras (`crop-cycles`):** Conectando uma cultura a um talhão para um ciclo produtivo[cite: 120].
+* [cite_start]**Atividades (`activities`):** Permitindo o agendamento de tarefas para cada safra[cite: 147].
+* **Estoque (`inventory`):** Um dos maiores saltos de complexidade. [cite_start]Modelei um sistema com Catálogo de Produtos, Níveis de Estoque e um "livro-razão" para Movimentações[cite: 181, 182]. [cite_start]Logo em seguida, refatorei tudo para suportar múltiplos **Silos**, tornando o controle de estoque muito mais poderoso[cite: 205].
 
-# production mode
-$ npm run start:prod
-```
+[cite_start]O ápice dessa fase foi quando finalmente conectei as pontas: implementei a lógica que vincula uma **Atividade de Colheita** a uma **Movimentação de Entrada** no estoque, alcançando a rastreabilidade completa da lavoura ao silo[cite: 240, 242, 299].
 
-## Run tests
+#### 5. Fase 2: Foco nas Pessoas e Recursos
+[cite_start]Recentemente, iniciamos a Fase 2 do projeto, focada nos recursos da fazenda[cite: 317]. [cite_start]O primeiro grande módulo foi o de **Colaboradores**, que construímos com um nível de detalhe profissional, incluindo informações contratuais (CLT/PJ), documentação e um sistema avançado de **Histórico de Eventos**, que registra automaticamente promoções e aumentos salariais[cite: 248, 319, 320].
 
-```bash
-# unit tests
-$ npm run test
+## Tecnologias Utilizadas
 
-# e2e tests
-$ npm run test:e2e
+* **Back-end:** [NestJS](https://nestjs.com/) (Node.js Framework)
+* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+* [cite_start]**Banco de Dados:** [PostgreSQL](https://www.postgresql.org/) [cite: 53]
+* [cite_start]**Extensão Geoespacial:** [PostGIS](https://postgis.net/) [cite: 53]
+* [cite_start]**ORM:** [TypeORM](https://typeorm.io/) [cite: 79]
+* **Validação de Dados:** [class-validator](https://github.com/typestack/class-validator) & [class-transformer](https://github.com/typestack/class-transformer)
 
-# test coverage
-$ npm run test:cov
-```
+## Estrutura do Projeto
+[cite_start]A API segue uma arquitetura modular, onde cada área de negócio principal é encapsulada em seu próprio módulo, garantindo a separação de responsabilidades e facilitando a manutenção[cite: 268]. A estrutura de pastas `src/modules` reflete essa organização, com módulos como `lands`, `activities`, `inventory` e o mais novo, `people`.
 
-## Deployment
+## Status Atual do Projeto
+O projeto está em pleno desenvolvimento e já conta com uma base sólida e funcional.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- [x] [cite_start]**Módulo de Cadastros Fundamentais:** CRUDs completos para Propriedades, Talhões (com geolocalização), Culturas, Produtos, Silos e Tipos de Tarefa[cite: 277].
+- [x] [cite_start]**Módulo de Colaboradores:** CRUD completo com detalhes contratuais e um sistema de histórico de eventos (manual e automático)[cite: 287, 289].
+- [x] [cite_start]**Módulo de Gestão Agrícola:** Criação de Safras e agendamento de Atividades[cite: 291].
+- [x] [cite_start]**Módulo de Estoque:** Gestão de inventário multi-silo, com consulta de saldo e extrato de movimentações por silo[cite: 302].
+- [x] [cite_start]**Rastreabilidade:** Vínculo funcional entre a Atividade de Colheita e a Movimentação de Entrada no Estoque[cite: 299].
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Roadmap (Próximos Passos)
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Este projeto é ambicioso e ainda há muito a construir. O plano de ação atual está focado em finalizar a Fase 2.
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- [ ] [cite_start]**Módulo de Maquinário:** Implementar o CRUD para cadastrar os ativos da fazenda (tratores, colheitadeiras, etc.)[cite: 323].
+- [ ] [cite_start]**Integração de Recursos:** Modificar o módulo de Atividades para permitir a associação de Colaboradores e Maquinário a cada tarefa agendada[cite: 324].
+- [ ] [cite_start]**Expandir o Módulo de Estoque:** Implementar outros tipos de movimentação, como Compra de Insumos, Venda de Produção e Transferência entre Silos[cite: 312].
+- [ ] **Iniciar a Fase 3: Módulo de Pecuária**.
+- [ ] **Iniciar a Fase 4: Módulo de Inteligência (Dashboards e Relatórios)**.
 
-## Resources
+## Como Executar o Projeto
 
-Check out a few resources that may come in handy when working with NestJS:
+1.  **Clone o repositório:**
+    ```bash
+    git clone [URL_DO_SEU_REPOSITORIO]
+    cd agrolink-api
+    ```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+3.  **Configure as variáveis de ambiente:**
+    * Renomeie o arquivo `.env.example` para `.env`.
+    * Preencha as variáveis do banco de dados (`DB_HOST`, `DB_USERNAME`, `DB_PASSWORD`, etc.).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+4.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    npm run start:dev
+    ```
+A aplicação estará rodando em `http://localhost:3000`.
 
-## Support
+## Contato
+**Jefferson Lima** - [Jeffersonlima@jeffersonlima.net.br](mailto:Jeffersonlima@jeffersonlima.net.br)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Link do Projeto: [https://github.com/jefferson23br/agrolink-api](https://github.com/jefferson23br/agrolink-api)
