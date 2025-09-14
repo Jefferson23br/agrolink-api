@@ -10,6 +10,7 @@ import { ActivitiesModule } from './modules/activities/activities.module';
 import { CropsModule } from './modules/crops/crops.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { PeopleModule } from './modules/people/people.module';
+import { AssetsModule } from './modules/assets/assets.module';
 
 
 
@@ -23,7 +24,8 @@ import { PeopleModule } from './modules/people/people.module';
     ActivitiesModule,
     CropsModule,
     InventoryModule,
-    PeopleModule, 
+    PeopleModule,
+    AssetsModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
