@@ -1,48 +1,64 @@
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+  Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany,
+  ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn,
 } from 'typeorm';
 import { SafraEntity } from '../../crop-cycles/entities/safra.entity';
 import { TaskTypeEntity } from '../../task-types/entities/task-type.entity';
+import { ColaboradorEntity } from '../../people/entities/colaborador.entity';
+import { MachineryEntity } from '../../assets/entities/machinery.entity';
+
+export enum ActivityStatus {
+  PENDENTE = 'PENDENTE',
+  EM_ANDAMENTO = 'EM_ANDAMENTO',
+  CONCLUIDA = 'CONCLUIDA',
+  CANCELADA = 'CANCELADA',
+}
 
 @Entity({ name: 'atividades_agricolas', schema: 'operations' })
 export class ActivityEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'safra_id', type: 'int' })
-  safraId: number;
-
-  @Column({ name: 'tipo_tarefa_id', type: 'int' })
-  tipoTarefaId: number;
-
-  @Column({ type: 'text', nullable: true })
-  descricao: string;
-
-  @Column({ name: 'quantidade_usada', type: 'decimal', precision: 10, scale: 2, nullable: true })
-  quantidadeUsada: number;
-
-  @Column({ name: 'data_inicio', type: 'timestamptz', nullable: true })
-  dataInicio: Date;
-
-  @Column({ name: 'data_fim', type: 'timestamptz', nullable: true })
-  dataFim: Date;
-
-  @Column({ type: 'varchar', length: 50, default: 'Agendada' })
-  status: string;
-
-  @ManyToOne(() => SafraEntity)
+  @ManyToOne(() => SafraEntity, { nullable: false })
   @JoinColumn({ name: 'safra_id' })
   safra: SafraEntity;
 
-  @ManyToOne(() => TaskTypeEntity)
+  @ManyToOne(() => TaskTypeEntity, { nullable: false })
   @JoinColumn({ name: 'tipo_tarefa_id' })
   tipoTarefa: TaskTypeEntity;
+
+  @ManyToMany(() => ColaboradorEntity)
+  @JoinTable({
+    name: 'atividades_colaboradores',
+    schema: 'operations',
+    joinColumn: { name: 'atividade_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'colaborador_id', referencedColumnName: 'id' },
+  })
+  colaboradores: ColaboradorEntity[];
+
+  @ManyToMany(() => MachineryEntity)
+  @JoinTable({
+    name: 'atividades_maquinario',
+    schema: 'operations',
+    joinColumn: { name: 'atividade_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'maquinario_id', referencedColumnName: 'id' },
+  })
+  maquinario: MachineryEntity[];
+
+  @Column({ nullable: true })
+  descricao?: string;
+
+  @Column({ name: 'quantidade_usada', type: 'numeric', precision: 15, scale: 3, nullable: true })
+  quantidadeUsada?: number;
+
+  @Column({ name: 'data_inicio', type: 'timestamptz' })
+  dataInicio: Date;
+
+  @Column({ name: 'data_fim', type: 'timestamptz' })
+  dataFim: Date;
+
+  @Column({ type: 'enum', enum: ActivityStatus, default: ActivityStatus.PENDENTE })
+  status: ActivityStatus;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

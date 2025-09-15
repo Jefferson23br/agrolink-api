@@ -1,4 +1,8 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray, IsDateString, IsEnum, IsNotEmpty,
+  IsNumber, IsOptional, IsString,
+} from 'class-validator';
+import { ActivityStatus } from '../entities/activity.entity';
 
 export class CreateActivityDto {
   @IsNumber()
@@ -13,15 +17,25 @@ export class CreateActivityDto {
   @IsOptional()
   descricao?: string;
 
-  @IsNumber()
-  @IsOptional()
-  quantidadeUsada?: number;
+  @IsDateString()
+  @IsNotEmpty()
+  dataInicio: Date;
 
   @IsDateString()
-  @IsOptional()
-  dataInicio?: Date;
+  @IsNotEmpty()
+  dataFim: Date;
 
-  @IsString()
+  @IsEnum(ActivityStatus)
   @IsOptional()
-  status?: string;
+  status?: ActivityStatus;
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  colaboradorIds?: number[];
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsOptional()
+  maquinarioIds?: number[];
 }
